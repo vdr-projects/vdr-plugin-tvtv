@@ -1,6 +1,15 @@
 VDR Plugin 'tvtv' Revision History
 -----------------------------------
 
+2008-12-01: Version 0.3.3p8
+- Take care of Start/Stop margins for timer check (thx to monty35)
+- Adjust log level for all the bugs (thx to monty35)
+- Adjust log level for TVTV receiving line for better error tracking (thx to monty35)
+- Add support for manual timezone offset fix, supported also DST or non-DST only and can
+   be also ignored (thx to monty35)
+- examples/tvtv_channelmap.conf_DVB-S: fix ARTE (reported by uclara)
+- change translation support from i18n to gettext (mo/po)
+
 2008-11-11: Version 0.3.3p7
 - Create a toggle to control adding of ongoing non-VPS timers ((thx to monty35)
   Note: if "off", this avoids a restart of a deleted running record/timer on

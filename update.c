@@ -391,6 +391,9 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
     unsigned int p=0;
     size_t rp=0;
     bool vps = false;
+    bool tzfix_start = false;
+    bool tzfix_end = false;
+    bool tzfix_vps = false;
     tChannelID vdrch, channelID;
     bool timer_update=false;
 #if VDRVERSNUM < 10336
@@ -429,7 +432,7 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
     dsyslog("TVTV: Start reading timer jobs");
     sLine = read_line_from_buffer(sBuffer, &p);
     while (!sLine->empty()) {
-      dsyslog("TVTV: Received '%s...'", sLine->substr(0,130).c_str());
+      isyslog("TVTV: Received '%s...'", sLine->substr(0,130).c_str());
       tvtvjob=split_csv(sLine->c_str(), field_cnt);
       if (tvtvjob != NULL) {
         for (int i=0; i<field_cnt; i++) {
@@ -475,9 +478,6 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 	  tVps.tm_year   -= 1900; tVps.tm_mon    -= 1; tVps.tm_isdst   = -1;
 	  tEnd.tm_year   -= 1900; tEnd.tm_mon    -= 1; tEnd.tm_isdst   = -1;		
 
-	  tStartTime = timegm(&tStart);
-	  tVpsTime   = timegm(&tVps);
-	  tEndTime   = timegm(&tEnd);
 	  time(&tCurrentTime); /* current time */
 
 // VPS was introduced with VDR 1.3.5
@@ -486,31 +486,124 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 #else
 	  vps = false;
 #endif	        
+	  if (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixIgnore) {
+	    // TimeZone handling not active, clear TimeZones
+              isyslog("TVTV: timezones are ignored by configuration: tSTartTime: %+05d  tEndTime: %+05d", StartTZ, EndTZ);
 
-	  // fix buggy received timezones
-	  timelocal = localtime(&tStartTime);
-	  if (timelocal->tm_gmtoff / 36 != StartTZ) {
-            dsyslog("TVTV: buggy timezone in tSTartTime detected: %+05d, fix to: %+05d", StartTZ, (int) (timelocal->tm_gmtoff / 36));
-	    StartTZ = timelocal->tm_gmtoff / 36;
- 	  };
+	      tStartTime = mktime(&tStart);
+	      tVpsTime   = mktime(&tVps);
+	      tEndTime   = mktime(&tEnd);
+	  } else {
+	    // TimeZone handling active
+	      tStartTime = timegm(&tStart);
+	      tVpsTime   = timegm(&tVps);
+	      tEndTime   = timegm(&tEnd);
 
-	  timelocal = localtime(&tEndTime);
-	  if (timelocal->tm_gmtoff / 36 != EndTZ) {
-            dsyslog("TVTV: buggy timezone in tEndTime detected: %+05d, fix to: %+05d", EndTZ, (int) (timelocal->tm_gmtoff / 36));
-	    EndTZ = timelocal->tm_gmtoff / 36;
- 	  };
+	    if ((TVTVConfig.TimeZoneShiftBugFix == eTimeShiftBugfixManual) || (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualDST) || (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualNonDST) ) {
+	      tzfix_start = false;
+	      tzfix_end   = false;
+	      tzfix_vps   = false;
 
-          tStartTime -= StartTZ*36;
-	  tEndTime -= EndTZ*36;
+	      timelocal = localtime(&tStartTime);
+	      if ((timelocal->tm_isdst < 0) && ((TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualDST) || (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualNonDST))) {
+                isyslog("TVTV: manual timezone shift skipped: DST information is not available for tSTartTime");
+	      } else if (timelocal->tm_isdst == 0) {
+		if (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualDST) {
+                  isyslog("TVTV: manual timezone shift skipped: tSTartTime is non-DST but only enabled for DST");
+		} else {
+		  tzfix_start = true;
+		};
+	      } else if (timelocal->tm_isdst > 0) {
+		if (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualNonDST) {
+                  isyslog("TVTV: manual timezone shift skipped: tSTartTime is DST but only enabled for non-DST");
+		} else {
+		  tzfix_start = true;
+		};
+	      };
+
+	      timelocal = localtime(&tEndTime);
+	      if ((timelocal->tm_isdst < 0) && ((TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualDST) || (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualNonDST))) {
+                isyslog("TVTV: manual timezone shift skipped: DST information is not available for tEndTime");
+	      } else if (timelocal->tm_isdst == 0) {
+		if (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualDST) {
+                  isyslog("TVTV: manual timezone shift skipped: tEndTime is non-DST but only enabled for DST");
+		} else {
+		  tzfix_end = true;
+		};
+	      } else if (timelocal->tm_isdst > 0) {
+		if (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualNonDST) {
+                  isyslog("TVTV: manual timezone shift skipped: tEndTime is DST but only enabled for non-DST");
+		} else {
+		  tzfix_end = true;
+		};
+	      };
+
+	      if (vps) {
+	        timelocal = localtime(&tVpsTime);
+  	        if ((timelocal->tm_isdst < 0) && ((TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualDST) || (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualNonDST))) {
+                  isyslog("TVTV: manual timezone shift skipped: DST information is not available for tVpsTime");
+	        } else if (timelocal->tm_isdst == 0) {
+	  	  if (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualDST) {
+                    isyslog("TVTV: manual timezone shift skipped: tVpsTime is non-DST but only enabled for DST");
+		  } else {
+		    tzfix_vps = true;
+		  };
+	        } else if (timelocal->tm_isdst > 0) {
+		  if (TVTVConfig.TimeZoneShiftBugFix == eTimeZoneBugfixManualNonDST) {
+                    isyslog("TVTV: manual timezone shift skipped: tVpsTime is DST but only enabled for non-DST");
+		  } else {
+		    tzfix_vps = true;
+		  };
+	        };
+	      };
+
+	      if (tzfix_start == true) {
+	        // shift buggy received timezones by manual given offset
+                isyslog("TVTV: manual timezone shift tSTartTime: %+05d, fix to: %+05d", StartTZ, (int) (StartTZ + TVTVConfig.TimeZoneShiftHours * 100));
+	        StartTZ += TVTVConfig.TimeZoneShiftHours * 100;
+                tStartTime -= StartTZ*36;
+	      };
+
+	      if (tzfix_end == true) {
+                isyslog("TVTV: manual timezone shift tEndTime: %+05d, fix to: %+05d", EndTZ, (int) (EndTZ + TVTVConfig.TimeZoneShiftHours * 100));
+	        EndTZ += TVTVConfig.TimeZoneShiftHours * 100;
+	        tEndTime -= EndTZ*36;
+	      };
 			
-	  if (vps) {
-  	    timelocal = localtime(&tVpsTime);
-	    if (timelocal->tm_gmtoff / 36 != VpsTZ) {
-              dsyslog("TVTV: buggy timezone in tVpsTime detected: %+05d, fix to: %+05d", VpsTZ, (int) (timelocal->tm_gmtoff / 36));
-	      VpsTZ = timelocal->tm_gmtoff / 36;
- 	    };
-	    tVpsTime -= VpsTZ*36;
+	      if (tzfix_vps == true) {
+                isyslog("TVTV: manual timezone shift tVpsTime: %+05d, fix to: %+05d", VpsTZ, (int) (VpsTZ + TVTVConfig.TimeZoneShiftHours * 100));
+	        VpsTZ += TVTVConfig.TimeZoneShiftHours * 100;
+  	        tVpsTime -= VpsTZ*36;
+	      };
+
+	    } else if (TVTVConfig.TimeZoneShiftBugFix == eTimeShiftBugfixAuto) {
+	      // fix buggy received timezones by autodetection (works only in case of CET only timers)
+	      timelocal = localtime(&tStartTime);
+	      if (timelocal->tm_gmtoff / 36 != StartTZ) {
+                isyslog("TVTV: buggy timezone in tSTartTime autodetected: %+05d, fix to: %+05d", StartTZ, (int) (timelocal->tm_gmtoff / 36));
+	        StartTZ = timelocal->tm_gmtoff / 36;
+ 	      };
+
+	      timelocal = localtime(&tEndTime);
+	      if (timelocal->tm_gmtoff / 36 != EndTZ) {
+                isyslog("TVTV: buggy timezone in tEndTime autodetected: %+05d, fix to: %+05d", EndTZ, (int) (timelocal->tm_gmtoff / 36));
+	        EndTZ = timelocal->tm_gmtoff / 36;
+ 	      };
+
+	      tStartTime -= StartTZ*36;
+	      tEndTime -= EndTZ*36;
+			
+	      if (vps) {
+  	        timelocal = localtime(&tVpsTime);
+	        if (timelocal->tm_gmtoff / 36 != VpsTZ) {
+                  isyslog("TVTV: buggy timezone in tVpsTime autodetected: %+05d, fix to: %+05d", VpsTZ, (int) (timelocal->tm_gmtoff / 36));
+	          VpsTZ = timelocal->tm_gmtoff / 36;
+ 	        };
+	        tVpsTime -= VpsTZ*36;
+	      };
+	    };
 	  };
+
 
 	  tStartTime -= Setup.MarginStart * 60;
 	  if (!vps) tEndTime += Setup.MarginStop * 60;
@@ -665,19 +758,19 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 		  // avoid Timer updates if Timer is shifted (TVTV UTC Problem)
 		  if (TVTVConfig.tvtv_bugfix == eTimeShiftBugfixManual) {
 		  	  // exactly configured hours
-		          dsyslog("TVTV: manual configured timezone shift: %d hrs", TVTVConfig.tvtv_bugfix_hrs);
+		          isyslog("TVTV: manual configured timezone shift: %d hrs", TVTVConfig.tvtv_bugfix_hrs);
 			  tvtv_bugfix_secs = TVTVConfig.tvtv_bugfix_hrs * 3600;
 		  } else if (TVTVConfig.tvtv_bugfix == eTimeShiftBugfixAuto) {
 			  // autodetect time zone distance
 			  time(&tloc);
 			  timelocal = localtime(&tloc);
-		          dsyslog("TVTV: autodetected timezone: %s, shift: %d hrs", timelocal->tm_zone, (int) (timelocal->tm_gmtoff / 3600));
+		          isyslog("TVTV: autodetected timezone: %s, shift: %d hrs", timelocal->tm_zone, (int) (timelocal->tm_gmtoff / 3600));
 			  tvtv_bugfix_secs = timelocal->tm_gmtoff;
 		  };
 
 		  if ((TVTVConfig.tvtv_bugfix != eTimeShiftBugfixOff) && ((((ti->StartTime() - tStartTime) == tvtv_bugfix_secs) && 
-		                                  ((ti->StopTime() - tEndTime) == tvtv_bugfix_secs)) || 
-		                                 (vps && ((ti->StopTime() - tEndTime) == tvtv_bugfix_secs)) )) {
+		                                    ((ti->StopTime() - tEndTime) == tvtv_bugfix_secs)) || 
+		                                   (vps && ((ti->StopTime() - tEndTime) == tvtv_bugfix_secs)) )) {
 		    isyslog("TVTV: timer %d update rejected (%s) [%s/%s/%d/%04d-%04d/%s]", ti->Index() + 1, 
 		                                                                        ti->File(), 
 											tvtv_timer[DEF_TVTV_SCHEDULE_UID].c_str(), 
@@ -721,7 +814,7 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 	      } else { // if (timer_update)
 		if (tvtv_timer[DEF_TVTV_SCHEDULE_ACT] == "rec") {
 
-		  if ((tEndTime < tCurrentTime) && (vps == false)) {
+		  if (((tEndTime - Setup.MarginStop * 60) < tCurrentTime) && (vps == false)) {
 		    // Do not add timer entry in the past, if vps is not active
 		    isyslog("TVTV: timer NOT added (EndTime in the past) (%s) [%s/%s/%d/%04d-%04d/%s]", 
 		                                                            oTimer->File(), 
@@ -733,7 +826,7 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 									    vps ? "VPS":"-");
 		  } else { // if (tEndTime < tCurrentTime)
 
-		    if ((tStartTime < tCurrentTime) && (vps == false) && (TVTVConfig.AddOngoingNonVpsTimers == 0)) {
+		    if (((tStartTime + Setup.MarginStart * 60) < tCurrentTime) && (vps == false) && (TVTVConfig.AddOngoingNonVpsTimers == 0)) {
   		      // Do not add timer entry with start time in the past, if vps is not active
 		      isyslog("TVTV: timer NOT added (StartTime in the past & AddOngoingNonVpsTimers=off) (%s) [%s/%s/%d/%04d-%04d/%s]", 
 		                                                            oTimer->File(), 
@@ -754,7 +847,7 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 									    vps ? (tVps.tm_hour * 100 + tVps.tm_min):(tStart.tm_hour * 100 + tStart.tm_min), 
 									    tEnd.tm_hour * 100 + tEnd.tm_min,
 									    vps ? "VPS":"-");
-		      if ((tEndTime < tCurrentTime) && (vps == false)) {
+		      if (((tStartTime + Setup.MarginStart * 60) < tCurrentTime) && (vps == false)) {
 		        isyslog("TVTV: timer %d notice: StartTime is behind CurrentTime (AddOngoingNonVpsTimers=on)", oTimer->Index() + 1);
                       };
 

@@ -17,7 +17,6 @@
 #include <fstream>
 #include <sstream>
 
-#include "i18n.h"
 #include "config.h"
 #include "channelmap.h"
 #include "md5tools.h"

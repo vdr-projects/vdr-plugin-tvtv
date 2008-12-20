@@ -1,0 +1,111 @@
+# German translations for vdr package
+# German messages for vdr.
+# Copyright (C) 2008 THE vdr'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the vdr package.
+# root <monty35@gmx.de>, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: vdr 1.6.0\n"
+"Report-Msgid-Bugs-To: monty35\n"
+"POT-Creation-Date: 2008-11-30 17:29+0100\n"
+"PO-Revision-Date: 2008-11-30 17:18+0100\n"
+"Last-Translator: monty35 <monty35@gmx.de>\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Nature/Title"
+msgstr "Art/Titel"
+
+msgid "Title/Nature"
+msgstr "Titel/Art"
+
+msgid "Format/Nature/Title"
+msgstr "Format/Art/Titel"
+
+msgid "Format/Title/Nature"
+msgstr "Format/Titel/Art"
+
+msgid "off"
+msgstr "aus"
+
+msgid "auto (timezone)"
+msgstr "auto (Zeitzone)"
+
+msgid "manual"
+msgstr "manuell"
+
+msgid "manual (DST only)"
+msgstr "man. (nur Sommerzeit)"
+
+msgid "manual (non-DST only)"
+msgstr "man. (nur Winterzeit)"
+
+msgid "ignore timezone"
+msgstr "Ignoriere Zeitzone"
+
+msgid "TVTV Server"
+msgstr "TVTV Server"
+
+msgid "TVTV User Name"
+msgstr "TVTV Benutzername"
+
+msgid "TVTV Password"
+msgstr "TVTV Passwort"
+
+msgid "Use HTTP Proxy"
+msgstr "Benutze HTTP Proxy"
+
+msgid "  HTTP Proxy"
+msgstr "  HTTP Proxy"
+
+msgid "Auto Update"
+msgstr "Automatisches Update"
+
+msgid "Updatetime (min)"
+msgstr "Updatezeit (min)"
+
+msgid "Show In Main Menu"
+msgstr "Im Hauptmenü anzeigen"
+
+msgid "Add ongoing non-VPS timers"
+msgstr "Aktive nicht-VPS Timers hinzufügen"
+
+msgid "Use VPS"
+msgstr "Benutze VPS"
+
+msgid "Format of File Name"
+msgstr "Format des Dateinamens"
+
+msgid "Use Station Name within File Name"
+msgstr "Sendernam. im Dateinam. verwenden"
+
+msgid "Use TVTV description in info.vdr"
+msgstr "Beschreibung in info.vdr übernehmen"
+
+msgid "Timer update time shift bugfix"
+msgstr "Timer Update Zeitverschiebung-Fix"
+
+msgid "  Time shift check (hrs)"
+msgstr "  Zeitverschiebung Check (Std)"
+
+msgid "TimeZone Shift BugFix"
+msgstr "Zeitzonen-Verschiebungs-Fix"
+
+msgid "TimeZone Shift (hrs)"
+msgstr "Zeitzonen-Verschiebung (h)"
+
+msgid "Reload ChannelMap"
+msgstr "Kanalmapping neu laden"
+
+msgid "Really reload ChannelMap?"
+msgstr "Kanalmapping wirklich neu laden?"
+
+msgid "TVTV update will be started"
+msgstr "TVTV Update startet nun"

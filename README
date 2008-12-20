@@ -50,7 +50,7 @@ Setup Menu:
       Shows entry in main menu to perform update manually
 
   Add ongoing non-VPS timers
-      Do not readd (and causing instant start of record) 
+      Do not re-add (and causing instant start of record) 
       non-VPS timers, if start time is in the past
 
   Use VPS           
@@ -73,6 +73,19 @@ Setup Menu:
       Sometimes a timer is wrongly updated due to a bug in the TVTV database. 
       It is shifted 1 hour (2 hours during daylight saving time) ealier. This can 
       be avoided by enabling this fix. "auto" is the recommended setting.
+
+  TimeZone Shift BugFix
+      Currently (Nov 2009), TVTV sends the wrong time zone for all times.
+      This happen for CET regional timers like ARD and also for GMT timers like
+      BBC.
+      "auto" means that a buggy timezone is detected and fixed (Note: this only works if 
+       *all* TVTV timers are in the same timezone as the vdr system. This is failsafe
+       and should avoid problems on the next DST switch
+      "manual" means that a timezone is manually corrected. This is NOT failsafe on the
+       next DST switch!
+      "manual (DST only)" use the manual timezone correction only in case of DST
+      "manual (non-DST only)" use the manual timezone correction only in case of non-DST
+      "ignore timezone" ignores the transmitted timezone completly
 
   Reload ChannelMap
       If channel map is changed it can be reloaded with this command

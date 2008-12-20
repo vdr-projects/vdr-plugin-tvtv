@@ -32,6 +32,17 @@ enum eTimeShiftBugfix
   eTimeShiftBugfixMAX
 };
 
+enum eTimeZoneBugfix
+{
+  eTimeZoneBugfixOff,
+  eTimeZoneBugfixAuto,
+  eTimeZoneBugfixManual,
+  eTimeZoneBugfixManualDST,
+  eTimeZoneBugfixManualNonDST,
+  eTimeZoneBugfixIgnore,
+  eTimeZoneBugfixMAX
+};
+
 struct cTVTVConfig
 {
 public:
@@ -57,6 +68,8 @@ public:
 #endif
   int tvtv_bugfix;
   int tvtv_bugfix_hrs;
+  int TimeZoneShiftBugFix;
+  int TimeZoneShiftHours;
 };
 
 extern cTVTVConfig TVTVConfig;

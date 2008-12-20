@@ -5,12 +5,11 @@
  *
  */
 
-#include "i18n.h"
 #include "config.h"
 #include "update.h"
 
 
-static const char *VERSION        = "0.3.3p7";
+static const char *VERSION        = "0.3.3p8";
 static const char *DESCRIPTION    = "TVTV Timers update";
 static const char *MAINMENUENTRY  = "TVTV";
 
@@ -48,6 +47,7 @@ private:
   virtual void Setup(void);
   const char *cRecordNames[eRecordName_MAX];
   const char *timeshiftbugfixmodes[eTimeShiftBugfixMAX];
+  const char *timezonebugfixmodes[eTimeZoneBugfixMAX];
 protected:
   virtual eOSState ProcessKey(eKeys Key);
   virtual void Store(void);
@@ -72,8 +72,15 @@ void cMenuSetupTVTV::Setup(void) {
   cRecordNames[eRecordName_FormatTitleNature] = tr("Format/Title/Nature");
 
   timeshiftbugfixmodes[eTimeShiftBugfixOff]    = tr("off");
-  timeshiftbugfixmodes[eTimeShiftBugfixAuto]   = tr("auto (Timezone)");
+  timeshiftbugfixmodes[eTimeShiftBugfixAuto]   = tr("auto (timezone)");
   timeshiftbugfixmodes[eTimeShiftBugfixManual] = tr("manual");
+
+  timezonebugfixmodes[eTimeZoneBugfixOff]          = tr("off");
+  timezonebugfixmodes[eTimeZoneBugfixAuto]         = tr("auto (timezone)");
+  timezonebugfixmodes[eTimeZoneBugfixManual]       = tr("manual");
+  timezonebugfixmodes[eTimeZoneBugfixManualDST]    = tr("manual (DST only)");
+  timezonebugfixmodes[eTimeZoneBugfixManualNonDST] = tr("manual (non-DST only)");
+  timezonebugfixmodes[eTimeZoneBugfixIgnore]       = tr("ignore timezone");
 
   Add(new cMenuEditStraItem(  tr("TVTV Server"), &data.tvtv_server, TVTVSRV_CNT, TVTV_SERVERS));
   Add(new cMenuEditStrItem(   tr("TVTV User Name"), data.username, sizeof(data.username), tr(FileNameChars)));
@@ -105,6 +112,10 @@ void cMenuSetupTVTV::Setup(void) {
   if (data.tvtv_bugfix == eTimeShiftBugfixManual)
     Add(new cMenuEditIntItem( tr("  Time shift check (hrs)"), &data.tvtv_bugfix_hrs, -23, 23));
 
+  Add(new cMenuEditStraItem(  tr("TimeZone Shift BugFix"), &data.TimeZoneShiftBugFix, eTimeZoneBugfixMAX, timezonebugfixmodes));
+  if (data.TimeZoneShiftBugFix == eTimeZoneBugfixManual || data.TimeZoneShiftBugFix == eTimeZoneBugfixManualDST || data.TimeZoneShiftBugFix == eTimeZoneBugfixManualNonDST)
+    Add(new cMenuEditIntItem( tr("TimeZone Shift (hrs)"), &data.TimeZoneShiftHours, -1, 1));
+
   Add(new cOsdItem(tr("Reload ChannelMap"),osUser9));
 
   SetCurrent(Get(current));
@@ -115,6 +126,7 @@ void cMenuSetupTVTV::Setup(void) {
 eOSState cMenuSetupTVTV::ProcessKey(eKeys Key) {
     int olduseproxy = data.useproxy;
     int oldtvtvbugfix = data.tvtv_bugfix;
+    int oldtvtvtzbugfix = data.TimeZoneShiftBugFix;
     eOSState state = cMenuSetupPage::ProcessKey(Key);
 
     switch(state) {
@@ -137,7 +149,7 @@ eOSState cMenuSetupTVTV::ProcessKey(eKeys Key) {
       break;
     }
 
-    if (Key != kNone && ((data.useproxy != olduseproxy) || (data.tvtv_bugfix != oldtvtvbugfix))) Setup();
+    if (Key != kNone && ((data.useproxy != olduseproxy) || (data.tvtv_bugfix != oldtvtvbugfix) || (data.TimeZoneShiftBugFix != oldtvtvtzbugfix))) Setup();
     return state;
 }
 
@@ -169,6 +181,8 @@ void cMenuSetupTVTV::Store(void)
 
   SetupStore("TVTVBugfix", TVTVConfig.tvtv_bugfix);
   SetupStore("TVTVBugfixHrs", TVTVConfig.tvtv_bugfix_hrs);
+  SetupStore("TVTVTimeZoneShiftBugFix", TVTVConfig.TimeZoneShiftBugFix);
+  SetupStore("TVTVTimeZoneShiftHrs", TVTVConfig.TimeZoneShiftHours);
 
   if (TVTVConfig.autoupdate)
     if (oUpdate)
@@ -262,7 +276,6 @@ cString cPluginTVTV::SVDRPCommand(const char *Cmd, const char *Option, int &Repl
 bool cPluginTVTV::Start(void)
 {
     // Start any background activities the plugin shall perform.
-    RegisterI18n(Phrases);
     
     oUpdate = new cUpdate();
     
@@ -313,6 +326,8 @@ bool cPluginTVTV::SetupParse(const char *Name, const char *Value)
 
   else if (!strcasecmp(Name, "TVTVBugfix"))  TVTVConfig.tvtv_bugfix = atoi(Value);
   else if (!strcasecmp(Name, "TVTVBugfixHrs"))  TVTVConfig.tvtv_bugfix_hrs = atoi(Value);
+  else if (!strcasecmp(Name, "TVTVTimeZoneShiftBugFix"))  TVTVConfig.TimeZoneShiftBugFix = atoi(Value);
+  else if (!strcasecmp(Name, "TVTVTimeZoneShiftHrs"))  TVTVConfig.TimeZoneShiftHours = atoi(Value);
 
   else
      return false;
