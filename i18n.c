@@ -441,8 +441,8 @@ const tI18nPhrase Phrases[] = {
 #endif
 #endif
   },
-  { "Time shift bugfix", // English
-    "\"Zeitproblem\"-Fix aktivieren", // Deutsch
+  { "Timer update time shift bugfix", // English
+    "Timer Update Zeitverschiebung-Fix aktivieren", // Deutsch
     "", // Slovenski
     "", // Italiano
     "", // Nederlands
@@ -470,8 +470,8 @@ const tI18nPhrase Phrases[] = {
 #endif
 #endif
   },
-  { "  Time shift (hrs)", // English
-    "  Zeitverschiebung (Std)", // Deutsch
+  { "  Time shift check (hrs)", // English
+    "  Zeitverschiebung Check (Std)", // Deutsch
     "", // Slovenski
     "", // Italiano
     "", // Nederlands

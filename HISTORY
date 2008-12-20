@@ -1,7 +1,7 @@
 VDR Plugin 'tvtv' Revision History
 -----------------------------------
 
-2008-06-08: Version 0.3.3ff
+2008-10-28: Version 0.3.3p6
 - Minor change to be compatible to 1.6.0
 - Fix segfault after manual update
 - The time shift bugfix is now extended, option "auto" detects current
@@ -11,6 +11,11 @@ VDR Plugin 'tvtv' Revision History
   Format can be included now (thx to monty35)
   Note: existing timers would not be updated after a change (needs to be
   impemented)!
+- Add autofix of buggy received timezone offset (thx to monty35)
+  TVTV transmit still +0200 for CET times (20081028)
+- Do not readd outdated timers (thx to monty35)
+  TVTV still transmit outdated timers, which otherwise would be added
+   by plugin and shortly deleted by vdr
 
 2007-02-06: Version 0.3.3
 - The plugin needed to be restarted if username or password were changed

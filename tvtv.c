@@ -10,7 +10,7 @@
 #include "update.h"
 
 
-static const char *VERSION        = "0.3.3p4";
+static const char *VERSION        = "0.3.3p6";
 static const char *DESCRIPTION    = "TVTV Timers update";
 static const char *MAINMENUENTRY  = "TVTV";
 
@@ -100,9 +100,9 @@ void cMenuSetupTVTV::Setup(void) {
   Add(new cMenuEditBoolItem(  tr("Use TVTV description in info.vdr"), &data.usetvtvdescr));
 #endif
 
-  Add(new cMenuEditStraItem(  tr("Time shift bugfix"), &data.tvtv_bugfix, eTimeShiftBugfixMAX, timeshiftbugfixmodes));
+  Add(new cMenuEditStraItem(  tr("Timer update time shift bugfix"), &data.tvtv_bugfix, eTimeShiftBugfixMAX, timeshiftbugfixmodes));
   if (data.tvtv_bugfix == eTimeShiftBugfixManual)
-    Add(new cMenuEditIntItem( tr("  Time shift (hrs)"), &data.tvtv_bugfix_hrs, -23, 23));
+    Add(new cMenuEditIntItem( tr("  Time shift check (hrs)"), &data.tvtv_bugfix_hrs, -23, 23));
 
   Add(new cOsdItem(tr("Reload ChannelMap"),osUser9));
 
