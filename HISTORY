@@ -1,0 +1,205 @@
+VDR Plugin 'tvtv' Revision History
+-----------------------------------
+
+2007-02-06: Version 0.3.3
+- The plugin needed to be restarted if username or password were changed
+  since the "Packed String" (contains username and password) was only 
+  generated once during start-up
+- The time shift bugfix is now configurable via a new setup option
+  solving problems with timers not using CET/CEST as timezone (e.g. BBC)
+- In case a channel is not found in the tvtv_channelmap.conf file, the 
+  channels name as well as its ID is printed in the logfile. This should
+  help adding new channels to the config file.
+- tvtv_channelmap.conf updated
+
+2007-01-02: Version 0.3.2
+- Code clean up
+- Deleted timer object might cause VDR to be killed if timer is deleted
+  within TVTV. (thx to monty35)
+
+2006-10-23: Version 0.3.1
+- added some #IFs making it compile on older VDR versions again.
+- Code clean up
+- tvtv_channelmap.conf updated
+- "not confirmed" message removed from logfile by using an own routine
+  to display OSD-Message
+- TVTV bugfix now also works with VPS-Timers
+- empty entry in config file may lead to segfault (thx to monty35 for
+  reporting this one)
+
+2006-10-09: Version 0.3.0
+- new SVDRP command "UPDATE" to update TVTV timers.
+- ChannelMap.h replaced by config file tvtv_channelmap.conf making it 
+  easier to maintain. The format of the configfile is slightly different
+  to the older ChannelMap.h now supporting different satellites and 
+  countries. The channel map can be reloaded by the plugins setup menu.
+- The new SVDRP command "RELOAD" reloads the channel map configuration
+  file.
+- Timer updates are rejected if shifted 1 or 2 hours earlier (depending
+  on the current time zone). This behaviour can be controlled by a new 
+  setup option.
+- Replaced comparison of string::npos with "unsigned int" in routine
+  ProcessImportedFile() since it may lead to problems on 64bit machines.
+
+
+2006-09-25: Version 0.2.14
+- i18n.c updated
+- ChannelMap.h updated
+- Timer updates are rejected if shifted 2 hours earlier. Successful and
+  rejected updates are documented in the logfile (thx to monty35).
+
+2006-04-25: Version 0.2.13a
+- Function ShowName() in class cChannel is not available on VDR
+  older than 1.3.15. Added an ifdef to solve this (thanks to GTRDRIVER
+  for reporting this one)
+
+2006-04-18: Version 0.2.13
+- new setup option decides whether to use the description coming
+  with the data from TVTV or not (just available for VDR 1.3.44+).
+  Starting with VDR 1.3.44 timer description is only taken from 
+  EPG so there is no need for the description from TVTV anymore.
+- Added logging of downloaded data to /var/log/vdr_tvtv.log for
+  debugging purpose (suggested by Schlappo)
+- Station name of timer is now added to File Name of recording. 
+  This behaviour can be controlled by a new setup option.
+- Adapted Makefile due to new requirements of VDR 1.3.47+
+
+2006-03-16: Version 0.2.12
+- added basic support for VDR 1.3.44. Timer description coming
+  from TVTV is now put into the Aux field of Timer-Object. Need
+  to investigate how this works with recordings without EPG.
+- Non-initialized data structure for HTTP download might cause
+  VDR to be killed. Proper initialization should solve this.
+- Missing define statements disabled VPS support in 0.2.11
+- added BBC channels to ChannelMap.h
+
+2006-02-17: Version 0.2.11
+- split the source code into separate files making it easier to
+  maintain.
+- TVTV-Server can now be selected via OSD
+- libcurl is now used to download data from TVTV adding proxy
+  support to the plugin. 
+- do not delete timers that are currently recording, even if it's 
+  just updated.
+- Plugin may hang on 64bit machines in routine calc_field_cnt() due
+  to compare values with different types (thx to bunghole)
+
+2005-12-15: Version 0.2.10a
+- VDR crashes if a timer with an empty summary exists and a timer
+  is added by TVTV (thx to mag128)
+
+2005-12-14: Version 0.2.10
+- ostringstream is used instead of snprintf() to create timer
+  entries.
+- Buffer for http download increased to 500kB
+- Timer entries are now created with full date if VDR 1.3.23+ 
+  is used
+- Debug messages added
+
+2005-11-07: Version 0.2.9
+- Updated for VDR 1.3.36: Timer entry is no longer limited
+  and description is not cut off if VDR-Version 1.3.36+ is
+  detected
+
+2005-11-02: Version 0.2.8a
+- Timer entry needs an additional cut off
+
+2005-11-01: Version 0.2.8
+- TVTV crashes if timer entry exceeds 10kB. Description is
+  cut off to keep it shorter (thx to monty35)
+- Global constant MAXPARSEBUFFER is used instead of
+  plain values
+
+2005-10-16: Version 0.2.7
+- ChannelMap.h updated
+
+2005-10-03: Version 0.2.6b
+- Timers are deleted even if they have changed since the 
+  last update (thx to monty35)
+- Debug messages updated (thx to monty35)
+
+2005-10-03: Version 0.2.6a
+- ChannelMap.h updated ('NICK' added, thx to wilderigel)
+
+2005-10-03: Version 0.2.6
+- Timers may be updated by adding the UID coming from
+  TVTV at the end of the description (thx to monty35)
+- Timers with colon in title will be handled as suggested in
+  VDRs manual
+
+2005-09-28: Version 0.2.5
+- ChannelMap.h updated ('Das Vierte' added)
+- split_csv() routine might cause vdr to be killed
+  (thx to ck-one for reporting this one)
+
+2005-09-24: Version 0.2.4
+- English translations updated
+- Debug messages updated (thx to monty35)
+- Fixed handling of VPS-Timers starting at midnight
+  (thx to uclara)
+
+2005-05-15: Version 0.2.3
+- ChannelMap.h updated
+- Number of timers is no longer limited by the plugin.
+- "Delete-Patch" replaced by following the action coming
+  with the timer. 
+- Filename of created timer does not contain "TVTV+" anymore
+- New setup option "Use VPS" decides whether timers created 
+  via TVTV use VPS or not. Timers set via EPG are not effected.
+- Compiles on VDR older than 1.3.18
+- German translations updated
+
+2005-05-09: Version 0.2.2
+- Timer is now created by using the time zone information
+  to be able to record e.g. english channels.
+  (thx to Briandorling for bringing this up)
+- does not use clear() method anymore
+
+2005-05-08: Version 0.2.1
+- ChannelMap.h updated (thx to monty35)
+- Ignore folder setting if nature is empty (thx to monty35)
+
+2005-05-06: Version 0.2.0
+- Data format changed to CSV (Comma Separated Values)
+
+
+2003-01-28: Version 0.1.6
+- Plugin can make a HTTP-Request without "wget".
+  And XML File will be not more created ;-))
+- OSD-Setup Menu Item "Show/Hide TVTV in Main menu"
+
+2002-12-01: Version 0.1.5
+
+- You are need a no changes (tools.h) in VDR Version >= 1.1.18
+- For XML file will be used your "Video" Directory
+
+2002-11-24: Version 0.1.4
+
+- IMPORTANT: Command Line settings is default settings.
+  after Save in OSD Setup, it will be skipped.
+  You can delete now your default settings.
+  Your settings will be saved in (/video)/setup.conf
+- Support VDR 1.1.17
+  You are need VDR Version >= 1.1.17
+- DefaultPriority & DefaultLifeTime Settings will be used
+- Timers After (Now + 1 Month) will be imported later
+- Extended File Format Setup Line inserted
+  If you want to have Nature like Main-Folder then set it to "yes"
+  (Default "no")
+
+2002-11-23: Version 0.1.3
+
+- MarginStart & MarginStop will be used
+- EPG Text Data will be saved too
+- File name format will be so one: Nature~Title ,-)
+
+2002-11-20: Version 0.1.2
+
+- Autoupdate
+- OSD Plugin Setup. Command Line will be used as Default Settings.
+
+2002-11-19: Version 0.1.0
+
+- Initial revision.
+
+This ist a Initial Version.
