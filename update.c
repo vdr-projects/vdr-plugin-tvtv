@@ -490,13 +490,13 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 	  // fix buggy received timezones
 	  timelocal = localtime(&tStartTime);
 	  if (timelocal->tm_gmtoff / 36 != StartTZ) {
-            dsyslog("TVTV: buggy timezone in tSTartTime detected: %+04d, fix to: %+04d", StartTZ, (int) (timelocal->tm_gmtoff / 36));
+            dsyslog("TVTV: buggy timezone in tSTartTime detected: %+05d, fix to: %+05d", StartTZ, (int) (timelocal->tm_gmtoff / 36));
 	    StartTZ = timelocal->tm_gmtoff / 36;
  	  };
 
 	  timelocal = localtime(&tEndTime);
 	  if (timelocal->tm_gmtoff / 36 != EndTZ) {
-            dsyslog("TVTV: buggy timezone in tEndTime detected: %+04d, fix to: %+04d", EndTZ, (int) (timelocal->tm_gmtoff / 36));
+            dsyslog("TVTV: buggy timezone in tEndTime detected: %+05d, fix to: %+05d", EndTZ, (int) (timelocal->tm_gmtoff / 36));
 	    EndTZ = timelocal->tm_gmtoff / 36;
  	  };
 
@@ -506,7 +506,7 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 	  if (vps) {
   	    timelocal = localtime(&tVpsTime);
 	    if (timelocal->tm_gmtoff / 36 != VpsTZ) {
-              dsyslog("TVTV: buggy timezone in tVpsTime detected: %+04d, fix to: %+04d", VpsTZ, (int) (timelocal->tm_gmtoff / 36));
+              dsyslog("TVTV: buggy timezone in tVpsTime detected: %+05d, fix to: %+05d", VpsTZ, (int) (timelocal->tm_gmtoff / 36));
 	      VpsTZ = timelocal->tm_gmtoff / 36;
  	    };
 	    tVpsTime -= VpsTZ*36;
@@ -733,13 +733,9 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 									    vps ? "VPS":"-");
 		  } else { // if (tEndTime < tCurrentTime)
 
-		    Timers.Add(oTimer);
-
-		    if (tStartTime < tCurrentTime) {
-		      isyslog("TVTV: timer %d notice: StartTime is behind CurrentTime", oTimer->Index() + 1);
-		    }
-
-		    isyslog("TVTV: timer %d added (%s) [%s/%s/%d/%04d-%04d/%s]", oTimer->Index() + 1, 
+		    if ((tStartTime < tCurrentTime) && (vps == false) && (TVTVConfig.AddOngoingNonVpsTimers == 0)) {
+  		      // Do not add timer entry with start time in the past, if vps is not active
+		      isyslog("TVTV: timer NOT added (StartTime in the past & AddOngoingNonVpsTimers=off) (%s) [%s/%s/%d/%04d-%04d/%s]", 
 		                                                            oTimer->File(), 
 									    tvtv_timer[DEF_TVTV_SCHEDULE_UID].c_str(), 
 									    tvtv_timer[DEF_TVTV_SCHEDULE_CHN].c_str(), 
@@ -747,6 +743,22 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 									    vps ? (tVps.tm_hour * 100 + tVps.tm_min):(tStart.tm_hour * 100 + tStart.tm_min), 
 									    tEnd.tm_hour * 100 + tEnd.tm_min,
 									    vps ? "VPS":"-");
+                    } else {
+		      Timers.Add(oTimer);
+
+		      isyslog("TVTV: timer %d added (%s) [%s/%s/%d/%04d-%04d/%s]", oTimer->Index() + 1, 
+		                                                            oTimer->File(), 
+									    tvtv_timer[DEF_TVTV_SCHEDULE_UID].c_str(), 
+									    tvtv_timer[DEF_TVTV_SCHEDULE_CHN].c_str(), 
+									    vps ? (tVps.tm_mday):(tStart.tm_mday), 
+									    vps ? (tVps.tm_hour * 100 + tVps.tm_min):(tStart.tm_hour * 100 + tStart.tm_min), 
+									    tEnd.tm_hour * 100 + tEnd.tm_min,
+									    vps ? "VPS":"-");
+		      if ((tEndTime < tCurrentTime) && (vps == false)) {
+		        isyslog("TVTV: timer %d notice: StartTime is behind CurrentTime (AddOngoingNonVpsTimers=on)", oTimer->Index() + 1);
+                      };
+
+		    }
 		  } // if (tEndTime < tCurrentTime)
 		}
 	      }

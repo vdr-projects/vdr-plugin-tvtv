@@ -10,7 +10,7 @@
 #include "update.h"
 
 
-static const char *VERSION        = "0.3.3p6";
+static const char *VERSION        = "0.3.3p7";
 static const char *DESCRIPTION    = "TVTV Timers update";
 static const char *MAINMENUENTRY  = "TVTV";
 
@@ -84,6 +84,7 @@ void cMenuSetupTVTV::Setup(void) {
   Add(new cMenuEditBoolItem(  tr("Auto Update"), &data.autoupdate));
   Add(new cMenuEditIntItem(   tr("Updatetime (min)"), &data.updatetime));
   Add(new cMenuEditBoolItem(  tr("Show In Main Menu"), &data.show_in_mainmenu));
+  Add(new cMenuEditBoolItem(  tr("Add ongoing non-VPS timers"), &data.AddOngoingNonVpsTimers));
 
 // VPS was introduced with VDR 1.3.5
 #if VDRVERSNUM >= 10305
@@ -151,6 +152,7 @@ void cMenuSetupTVTV::Store(void)
   SetupStore("UseProxy", TVTVConfig.useproxy);
   SetupStore("HTTPProxy", TVTVConfig.httpproxy);
   SetupStore("AutoUpdate", TVTVConfig.autoupdate);
+  SetupStore("AddOngoingNonVpstimers", TVTVConfig.AddOngoingNonVpsTimers);
   SetupStore("UpdateTime", TVTVConfig.updatetime);
   SetupStore("FormatRecordName", TVTVConfig.FormatRecordName);
   SetupStore("UseStationInFName", TVTVConfig.usestation);
@@ -295,6 +297,7 @@ bool cPluginTVTV::SetupParse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "UseProxy"))    TVTVConfig.useproxy = atoi(Value);
   else if (!strcasecmp(Name, "HTTPProxy"))   strcpy(TVTVConfig.httpproxy, Value);
   else if (!strcasecmp(Name, "AutoUpdate"))  TVTVConfig.autoupdate = atoi(Value);
+  else if (!strcasecmp(Name, "AddOngoingNonVpsTimers"))  TVTVConfig.AddOngoingNonVpsTimers = atoi(Value);
   else if (!strcasecmp(Name, "UpdateTime"))  TVTVConfig.updatetime = atoi(Value);
   else if (!strcasecmp(Name, "FormatRecordName")) TVTVConfig.FormatRecordName = atoi(Value);
   else if (!strcasecmp(Name, "UseStationInFName")) TVTVConfig.usestation = atoi(Value);

@@ -2,8 +2,13 @@ This is a "plugin" for the Video Disk Recorder (VDR).
 
 Written by:             Mario Gross <vdr-tvtv-plugin@arcor.de>
                         (based on Version 0.1.6 created by Gerald Berwolf <genka@vdrportal.de>)
+			
+			Further improvements by monty35 <monty35@gmx.de>
 
 Project's homepage:     http://home.arcor.de/grossmar
+
+			Further improvement patches:
+			http://www.vdrportal.de/board/thread.php?threadid=77102
 
 
 See the file COPYING for license information.
@@ -44,10 +49,17 @@ Setup Menu:
   Show In Main Menu
       Shows entry in main menu to perform update manually
 
+  Add ongoing non-VPS timers
+      Do not readd (and causing instant start of record) 
+      non-VPS timers, if start time is in the past
+
   Use VPS           
       Add timers using VPS if available (only VDR 1.3.5+)
 
-  Use Nature within File Name
+  Format of File Name
+      Select format of file name (Format/Nature/Title) in various
+      combinations
+
   Use Station Name within File Name
       Nature and/or Station Name are added to the filename as separate
       directory.
@@ -57,11 +69,10 @@ Setup Menu:
       taken from EPG. This switch decides whether or not the description
       coming from TVTV will be added as a comment to info.vdr.
 
-  Time shift bugfix
-  Time shift (hrs)
+  Timer update time shift bugfix
       Sometimes a timer is wrongly updated due to a bug in the TVTV database. 
       It is shifted 1 hour (2 hours during daylight saving time) ealier. This can 
-      be avoided by enabling this fix.
+      be avoided by enabling this fix. "auto" is the recommended setting.
 
   Reload ChannelMap
       If channel map is changed it can be reloaded with this command

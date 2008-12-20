@@ -42,6 +42,7 @@ public:
   char password[30];
   int  updatetime;
   int  autoupdate;
+  int  AddOngoingNonVpsTimers;
   int  FormatRecordName;
   int  usestation;
   int  show_in_mainmenu;

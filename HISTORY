@@ -1,6 +1,11 @@
 VDR Plugin 'tvtv' Revision History
 -----------------------------------
 
+2008-11-11: Version 0.3.3p7
+- Create a toggle to control adding of ongoing non-VPS timers ((thx to monty35)
+  Note: if "off", this avoids a restart of a deleted running record/timer on
+   next TVTV update
+
 2008-10-28: Version 0.3.3p6
 - Minor change to be compatible to 1.6.0
 - Fix segfault after manual update
