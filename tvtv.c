@@ -10,7 +10,7 @@
 #include "update.h"
 
 
-static const char *VERSION        = "0.3.3";
+static const char *VERSION        = "0.3.3p4";
 static const char *DESCRIPTION    = "TVTV Timers update";
 static const char *MAINMENUENTRY  = "TVTV";
 
@@ -46,6 +46,8 @@ class cMenuSetupTVTV : public cMenuSetupPage {
 private:
   cTVTVConfig data; 
   virtual void Setup(void);
+  const char *cRecordNames[eRecordName_MAX];
+  const char *timeshiftbugfixmodes[eTimeShiftBugfixMAX];
 protected:
   virtual eOSState ProcessKey(eKeys Key);
   virtual void Store(void);
@@ -63,6 +65,16 @@ void cMenuSetupTVTV::Setup(void) {
   
   Clear();
 
+  cRecordNames[eRecordName_Title]             = tr("Title");
+  cRecordNames[eRecordName_NatureTitle]       = tr("Nature/Title");
+  cRecordNames[eRecordName_TitleNature]       = tr("Title/Nature");
+  cRecordNames[eRecordName_FormatNatureTitle] = tr("Format/Nature/Title");
+  cRecordNames[eRecordName_FormatTitleNature] = tr("Format/Title/Nature");
+
+  timeshiftbugfixmodes[eTimeShiftBugfixOff]    = tr("off");
+  timeshiftbugfixmodes[eTimeShiftBugfixAuto]   = tr("auto (Timezone)");
+  timeshiftbugfixmodes[eTimeShiftBugfixManual] = tr("manual");
+
   Add(new cMenuEditStraItem(  tr("TVTV Server"), &data.tvtv_server, TVTVSRV_CNT, TVTV_SERVERS));
   Add(new cMenuEditStrItem(   tr("TVTV User Name"), data.username, sizeof(data.username), tr(FileNameChars)));
   Add(new cMenuEditStrItem(   tr("TVTV Password"), data.password, sizeof(data.password), tr(FileNameChars)));
@@ -78,7 +90,7 @@ void cMenuSetupTVTV::Setup(void) {
   Add(new cMenuEditBoolItem(  tr("Use VPS"), &data.usevps));
 #endif
   
-  Add(new cMenuEditBoolItem(  tr("Use Nature within File Name"), &data.usegenre));
+  Add(new cMenuEditStraItem(  tr("Format of File Name"), &data.FormatRecordName, eRecordName_MAX, cRecordNames));
   Add(new cMenuEditBoolItem(  tr("Use Station Name within File Name"), &data.usestation));
 
 // Starting with VDR 1.3.44, the description of a recording is 
@@ -88,9 +100,9 @@ void cMenuSetupTVTV::Setup(void) {
   Add(new cMenuEditBoolItem(  tr("Use TVTV description in info.vdr"), &data.usetvtvdescr));
 #endif
 
-  Add(new cMenuEditBoolItem(  tr("Time shift bugfix"), &data.tvtv_bugfix));
-  if (data.tvtv_bugfix)
-    Add(new cMenuEditIntItem( tr("  Time shift (hrs)"), &data.tvtv_bugfix_hrs, 1, 4));
+  Add(new cMenuEditStraItem(  tr("Time shift bugfix"), &data.tvtv_bugfix, eTimeShiftBugfixMAX, timeshiftbugfixmodes));
+  if (data.tvtv_bugfix == eTimeShiftBugfixManual)
+    Add(new cMenuEditIntItem( tr("  Time shift (hrs)"), &data.tvtv_bugfix_hrs, -23, 23));
 
   Add(new cOsdItem(tr("Reload ChannelMap"),osUser9));
 
@@ -140,7 +152,7 @@ void cMenuSetupTVTV::Store(void)
   SetupStore("HTTPProxy", TVTVConfig.httpproxy);
   SetupStore("AutoUpdate", TVTVConfig.autoupdate);
   SetupStore("UpdateTime", TVTVConfig.updatetime);
-  SetupStore("UseGenreInFName", TVTVConfig.usegenre);
+  SetupStore("FormatRecordName", TVTVConfig.FormatRecordName);
   SetupStore("UseStationInFName", TVTVConfig.usestation);
   SetupStore("ShowInMainMenu", TVTVConfig.show_in_mainmenu);
 
@@ -192,8 +204,8 @@ void cPluginTVTV::DisplayMessage(const char *s) {
   cStatus::MsgOsdStatusMessage(s);
   Interface->Wait(0);
   if (displayMessage) {
-     delete displayMessage;
      displayMessage = NULL;
+     delete displayMessage;
      cStatus::MsgOsdClear();
   }
   else {
@@ -284,7 +296,7 @@ bool cPluginTVTV::SetupParse(const char *Name, const char *Value)
   else if (!strcasecmp(Name, "HTTPProxy"))   strcpy(TVTVConfig.httpproxy, Value);
   else if (!strcasecmp(Name, "AutoUpdate"))  TVTVConfig.autoupdate = atoi(Value);
   else if (!strcasecmp(Name, "UpdateTime"))  TVTVConfig.updatetime = atoi(Value);
-  else if (!strcasecmp(Name, "UseGenreInFName")) TVTVConfig.usegenre = atoi(Value);
+  else if (!strcasecmp(Name, "FormatRecordName")) TVTVConfig.FormatRecordName = atoi(Value);
   else if (!strcasecmp(Name, "UseStationInFName")) TVTVConfig.usestation = atoi(Value);
   else if (!strcasecmp(Name, "ShowInMainMenu")) TVTVConfig.show_in_mainmenu = atoi(Value);
 // VPS was introduced with VDR 1.3.5

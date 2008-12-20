@@ -15,7 +15,7 @@ cTVTVConfig::cTVTVConfig(void) {
   strn0cpy(password,  "", sizeof(password));
   autoupdate=0;
   updatetime=30;
-  usegenre=1;
+  FormatRecordName = eRecordName_FormatNatureTitle;
   usestation=1;
   show_in_mainmenu=1;
   useproxy=0;

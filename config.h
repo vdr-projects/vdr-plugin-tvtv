@@ -14,6 +14,24 @@
 #include <vdr/tools.h>
 #include <vdr/status.h>
 
+enum eRecordName
+{
+  eRecordName_Title,
+  eRecordName_NatureTitle,
+  eRecordName_TitleNature,
+  eRecordName_FormatNatureTitle,
+  eRecordName_FormatTitleNature,
+  eRecordName_MAX
+};
+
+enum eTimeShiftBugfix
+{
+  eTimeShiftBugfixOff,
+  eTimeShiftBugfixAuto,
+  eTimeShiftBugfixManual,
+  eTimeShiftBugfixMAX
+};
+
 struct cTVTVConfig
 {
 public:
@@ -24,7 +42,7 @@ public:
   char password[30];
   int  updatetime;
   int  autoupdate;
-  int  usegenre;
+  int  FormatRecordName;
   int  usestation;
   int  show_in_mainmenu;
   int  useproxy;

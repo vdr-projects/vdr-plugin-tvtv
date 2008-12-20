@@ -391,7 +391,7 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
     unsigned int p=0;
     size_t rp=0;
     bool vps = false;
-    tChannelID vdrch;
+    tChannelID vdrch, channelID;
     bool timer_update=false;
 #if VDRVERSNUM < 10336
     unsigned int max_desc_len=0;
@@ -400,6 +400,10 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
     time_t tStartTime, tVpsTime, tEndTime;
     struct tm tStart, tVps, tEnd;
     int StartTZ, VpsTZ, EndTZ;
+
+    int tvtv_bugfix_secs = 0; /* seconds of TVTV bugfix (sends sometimes UTC instead of local time) */
+    struct tm *timelocal;
+    time_t tloc;
 		
     cTimer *oTimer = NULL;
     cTimer *ti = NULL;
@@ -425,7 +429,7 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
     dsyslog("TVTV: Start reading timer jobs");
     sLine = read_line_from_buffer(sBuffer, &p);
     while (!sLine->empty()) {
-      dsyslog("TVTV: Received '%s...'", sLine->substr(0,80).c_str());
+      dsyslog("TVTV: Received '%s...'", sLine->substr(0,130).c_str());
       tvtvjob=split_csv(sLine->c_str(), field_cnt);
       if (tvtvjob != NULL) {
         for (int i=0; i<field_cnt; i++) {
@@ -491,22 +495,35 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 	  localtime_r(&tStartTime, &tStart);
 	  localtime_r(&tVpsTime, &tVps);
 	  localtime_r(&tEndTime, &tEnd);
-	
-	  // Adding Genre and Station Name to File Name to make it more unique
-	  if (TVTVConfig.usegenre && ! tvtv_timer[DEF_TVTV_SCHEDULE_NAT].empty())
-	    s = tvtv_timer[DEF_TVTV_SCHEDULE_NAT] + "~";
-	  else
-	    s = "";
 
+	  s = ""; // start
+
+	  // Adding optional Station Name to File Name to make it more unique
 	  if (TVTVConfig.usestation) 
 #if VDRVERSNUM >= 10315
             s = s + oTVTVChannel->ShortName(true) + "~";
 #else
             s = s + oTVTVChannel->Name() + "~";
 #endif
-          s += tvtv_timer[DEF_TVTV_SCHEDULE_TIT];
-	  
-	  
+
+	  // Format as 1st
+	  if (((TVTVConfig.FormatRecordName == eRecordName_FormatNatureTitle) || (TVTVConfig.FormatRecordName == eRecordName_FormatTitleNature)) && ! tvtv_timer[DEF_TVTV_SCHEDULE_FRM].empty()) {
+	    s = tvtv_timer[DEF_TVTV_SCHEDULE_FRM] + "~";
+	  };
+
+	  // Nature as 1st or 2nd before title
+	  if (((TVTVConfig.FormatRecordName == eRecordName_NatureTitle) || (TVTVConfig.FormatRecordName == eRecordName_FormatNatureTitle)) && ! tvtv_timer[DEF_TVTV_SCHEDULE_NAT].empty()) {
+	    s = tvtv_timer[DEF_TVTV_SCHEDULE_NAT] + "~";
+	  };
+
+	  // Add Title to File Name
+	  s += tvtv_timer[DEF_TVTV_SCHEDULE_TIT];
+
+	  // Nature after title
+	  if (((TVTVConfig.FormatRecordName == eRecordName_TitleNature) || (TVTVConfig.FormatRecordName == eRecordName_FormatTitleNature)) && ! tvtv_timer[DEF_TVTV_SCHEDULE_NAT].empty()) {
+	    s = "~" + tvtv_timer[DEF_TVTV_SCHEDULE_NAT];
+	  };
+
 	  // Colons should be replaced by '|' in title
 	  rp = s.find(':',0 ); 
 	  while (rp != string::npos) { s.replace(rp, 1, 1, '|'); rp = s.find(':',0 ); }
@@ -519,7 +536,9 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 #else
           oss << "1:";
 #endif
-	  oss << oTVTVChannel->GetChannelID().ToString() << ":";
+	  channelID = oTVTVChannel->GetChannelID();
+	  oss << *channelID.ToString();
+	  oss << ":";
 
 // Starting with VDR 1.3.23 timer entries support a full date in ISO notation. 
 #if VDRVERSNUM >= 10323
@@ -621,10 +640,22 @@ void cUpdate::ProcessImportedFile(const char *sBuffer)
 
 	      if (timer_update) { // Timer exists
 		if (tvtv_timer[DEF_TVTV_SCHEDULE_ACT] == "rec") {
-		  // avoid Timer updates if Timer is shifted exactly 1 or 2 hours earlier (TVTV Problem)
-		  if (TVTVConfig.tvtv_bugfix && ((((ti->StartTime() - tStartTime) == TVTVConfig.tvtv_bugfix_hrs*3600) && 
-		                                  ((ti->StopTime() - tEndTime) == TVTVConfig.tvtv_bugfix_hrs*3600)) || 
-		                                 (vps && ((ti->StopTime() - tEndTime) == TVTVConfig.tvtv_bugfix_hrs*3600)) )) {
+		  // avoid Timer updates if Timer is shifted (TVTV UTC Problem)
+		  if (TVTVConfig.tvtv_bugfix == eTimeShiftBugfixManual) {
+		  	  // exactly configured hours
+		          dsyslog("TVTV: manual configured timezone shift: %d hrs", TVTVConfig.tvtv_bugfix_hrs);
+			  tvtv_bugfix_secs = TVTVConfig.tvtv_bugfix_hrs * 3600;
+		  } else if (TVTVConfig.tvtv_bugfix == eTimeShiftBugfixAuto) {
+			  // autodetect time zone distance
+			  time(&tloc);
+			  timelocal = localtime(&tloc);
+		          dsyslog("TVTV: autodetected timezone: %s, shift: %d hrs", timelocal->tm_zone, (int) (timelocal->tm_gmtoff / 3600));
+			  tvtv_bugfix_secs = timelocal->tm_gmtoff;
+		  };
+
+		  if ((TVTVConfig.tvtv_bugfix != eTimeShiftBugfixOff) && ((((ti->StartTime() - tStartTime) == tvtv_bugfix_secs) && 
+		                                  ((ti->StopTime() - tEndTime) == tvtv_bugfix_secs)) || 
+		                                 (vps && ((ti->StopTime() - tEndTime) == tvtv_bugfix_secs)) )) {
 		    isyslog("TVTV: timer %d update rejected (%s) [%s/%s/%d/%04d-%04d/%s]", ti->Index() + 1, 
 		                                                                        ti->File(), 
 											tvtv_timer[DEF_TVTV_SCHEDULE_UID].c_str(), 

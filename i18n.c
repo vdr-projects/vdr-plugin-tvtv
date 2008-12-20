@@ -180,8 +180,8 @@ const tI18nPhrase Phrases[] = {
 #endif
 #endif
   },
-  { "Use Nature within File Name", // English
-    "Genre im Dateinamen verwenden", // Deutsch
+  { "Format of File Name", // English
+    "Format des Dateinamens", // Deutsch
     "", // Slovenski
     "", // Italiano
     "", // Nederlands
@@ -472,6 +472,64 @@ const tI18nPhrase Phrases[] = {
   },
   { "  Time shift (hrs)", // English
     "  Zeitverschiebung (Std)", // Deutsch
+    "", // Slovenski
+    "", // Italiano
+    "", // Nederlands
+    "", // Português
+    "", // Français
+    "", // Norsk
+    "", // Suomi
+    "", // Polski
+    "", // Español
+    "", // Greek
+    "", // Svenska
+    "", // Romaneste
+    "", // Magyar
+    "", // Català
+#if VDRVERSNUM > 10302
+    "", // Russian
+#if VDRVERSNUM > 10307
+    "", // Hrvatski
+#if VDRVERSNUM > 10313
+    "", // Eesti
+#if VDRVERSNUM > 10316
+    "", // Dansk
+#endif
+#endif
+#endif
+#endif
+  },
+  { "manual", // English
+    "manuell", // Deutsch
+    "", // Slovenski
+    "", // Italiano
+    "", // Nederlands
+    "", // Português
+    "", // Français
+    "", // Norsk
+    "", // Suomi
+    "", // Polski
+    "", // Español
+    "", // Greek
+    "", // Svenska
+    "", // Romaneste
+    "", // Magyar
+    "", // Català
+#if VDRVERSNUM > 10302
+    "", // Russian
+#if VDRVERSNUM > 10307
+    "", // Hrvatski
+#if VDRVERSNUM > 10313
+    "", // Eesti
+#if VDRVERSNUM > 10316
+    "", // Dansk
+#endif
+#endif
+#endif
+#endif
+  },
+  { "auto (Timezone)", // English
+    "auto (Zeitzone)", // Deutsch
     "", // Slovenski
     "", // Italiano
     "", // Nederlands

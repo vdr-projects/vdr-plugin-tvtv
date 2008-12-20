@@ -1,6 +1,17 @@
 VDR Plugin 'tvtv' Revision History
 -----------------------------------
 
+2008-06-08: Version 0.3.3ff
+- Minor change to be compatible to 1.6.0
+- Fix segfault after manual update
+- The time shift bugfix is now extended, option "auto" detects current
+  used timezone automatically and takes care (this covers daylight 
+  saving time switches) (thx to monty35)
+- Add option to define the format of the filename, Nature(Genre) and 
+  Format can be included now (thx to monty35)
+  Note: existing timers would not be updated after a change (needs to be
+  impemented)!
+
 2007-02-06: Version 0.3.3
 - The plugin needed to be restarted if username or password were changed
   since the "Packed String" (contains username and password) was only 
