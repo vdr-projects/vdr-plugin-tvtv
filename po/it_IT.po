@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: VDR 1.5.7\n"
-"Report-Msgid-Bugs-To: monty35\n"
+"Report-Msgid-Bugs-To: http://projects.vdr-developer.org/projects/plg-tvtv/issues/new\n"
 "POT-Creation-Date: 2008-11-30 17:29+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
