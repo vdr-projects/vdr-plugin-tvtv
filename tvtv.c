@@ -89,7 +89,8 @@ void cMenuSetupTVTV::Setup(void) {
   if (data.useproxy)
     Add(new cMenuEditStrItem( tr("  HTTP Proxy"), data.httpproxy, sizeof(data.httpproxy), tr(FileNameChars)));
   Add(new cMenuEditBoolItem(  tr("Auto Update"), &data.autoupdate));
-  Add(new cMenuEditIntItem(   tr("Updatetime (min)"), &data.updatetime));
+  if (data.autoupdate)
+    Add(new cMenuEditIntItem( tr("Updatetime (min)"), &data.updatetime));
   Add(new cMenuEditBoolItem(  tr("Show In Main Menu"), &data.show_in_mainmenu));
   Add(new cMenuEditBoolItem(  tr("Add ongoing non-VPS timers"), &data.AddOngoingNonVpsTimers));
 
@@ -124,9 +125,11 @@ void cMenuSetupTVTV::Setup(void) {
 
 
 eOSState cMenuSetupTVTV::ProcessKey(eKeys Key) {
-    int olduseproxy = data.useproxy;
-    int oldtvtvbugfix = data.tvtv_bugfix;
-    int oldtvtvtzbugfix = data.TimeZoneShiftBugFix;
+    int old_useproxy     = data.useproxy;
+    int old_tvtvbugfix   = data.tvtv_bugfix;
+    int old_tvtvtzbugfix = data.TimeZoneShiftBugFix;
+    int old_autoupdate   = data.autoupdate;
+
     eOSState state = cMenuSetupPage::ProcessKey(Key);
 
     switch(state) {
@@ -149,7 +152,12 @@ eOSState cMenuSetupTVTV::ProcessKey(eKeys Key) {
       break;
     }
 
-    if (Key != kNone && ((data.useproxy != olduseproxy) || (data.tvtv_bugfix != oldtvtvbugfix) || (data.TimeZoneShiftBugFix != oldtvtvtzbugfix))) Setup();
+    if (Key != kNone && (
+	(data.useproxy != old_useproxy)
+	|| (data.tvtv_bugfix != old_tvtvbugfix)
+	|| (data.TimeZoneShiftBugFix != old_tvtvtzbugfix)
+	|| (data.autoupdate != old_autoupdate)
+    )) Setup();
     return state;
 }
 
