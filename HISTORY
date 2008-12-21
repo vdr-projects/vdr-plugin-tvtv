@@ -1,6 +1,8 @@
 VDR Plugin 'tvtv' Revision History
 -----------------------------------
 
+2008-12-21: Add italian translation (thx to Diego Pierotto)
+
 2008-12-01: Version 0.3.3p8
 - Take care of Start/Stop margins for timer check (thx to monty35)
 - Adjust log level for all the bugs (thx to monty35)
