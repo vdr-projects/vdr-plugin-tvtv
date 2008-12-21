@@ -1,0 +1,107 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: VDR 1.5.7\n"
+"Report-Msgid-Bugs-To: monty35\n"
+"POT-Creation-Date: 2008-11-30 17:29+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Diego Pierotto <vdr-italian@tiscali.it>\n"
+"Language-Team:  <vdr@linuxtv.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Italian\n"
+"X-Poedit-Country: ITALY\n"
+
+msgid "Title"
+msgstr "Titolo"
+
+msgid "Nature/Title"
+msgstr "Natura/Titolo"
+
+msgid "Title/Nature"
+msgstr "Titolo/Natura"
+
+msgid "Format/Nature/Title"
+msgstr "Formato/Natura/Titolo"
+
+msgid "Format/Title/Nature"
+msgstr "Formato/Titolo/Natura"
+
+msgid "off"
+msgstr "disattivo"
+
+msgid "auto (timezone)"
+msgstr "automatico (fuso orario)"
+
+msgid "manual"
+msgstr "manuale"
+
+msgid "manual (DST only)"
+msgstr "manuale (solo DST)"
+
+msgid "manual (non-DST only)"
+msgstr "manuale (solo non DST)"
+
+msgid "ignore timezone"
+msgstr "ignora fuso orario"
+
+msgid "TVTV Server"
+msgstr "Server TVTV"
+
+msgid "TVTV User Name"
+msgstr "Nome utente TVTV"
+
+msgid "TVTV Password"
+msgstr "Password TVTV"
+
+msgid "Use HTTP Proxy"
+msgstr "Utilizza proxy HTTP"
+
+msgid "  HTTP Proxy"
+msgstr "  Proxy HTTP"
+
+msgid "Auto Update"
+msgstr "Aggiornamento automatico"
+
+msgid "Updatetime (min)"
+msgstr "Ora aggiornamento (min)"
+
+msgid "Show In Main Menu"
+msgstr "Mostra nel menu principale"
+
+msgid "Add ongoing non-VPS timers"
+msgstr "Aggiungi prossimi timer non VPS"
+
+msgid "Use VPS"
+msgstr "Utilizza VPS"
+
+msgid "Format of File Name"
+msgstr "Formato del nome file"
+
+msgid "Use Station Name within File Name"
+msgstr "Utilizza nome stazione nel nome file"
+
+msgid "Use TVTV description in info.vdr"
+msgstr "Utilizza descrizione TVTV in info.vdr"
+
+msgid "Timer update time shift bugfix"
+msgstr "Correzione modifica aggiorn. ora timer"
+
+msgid "  Time shift check (hrs)"
+msgstr "  Verifica modifica ora (ore)"
+
+msgid "TimeZone Shift BugFix"
+msgstr "Correzione modifica fuso orario"
+
+msgid "TimeZone Shift (hrs)"
+msgstr "  Modifica fuso orario (ore)"
+
+msgid "Reload ChannelMap"
+msgstr "Ricarica mappa canale"
+
+msgid "Really reload ChannelMap?"
+msgstr "Sicuro di ricaricare la mappa canale?"
+
+msgid "TVTV update will be started"
+msgstr "Aggiornamento TVTV in corso"
+
