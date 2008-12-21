@@ -82,7 +82,7 @@ I18Npot   = $(PODIR)/$(PLUGIN).pot
 	msgfmt -c -o $@ $<
 
 $(I18Npot): $(wildcard *.c)
-	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='monty35' -o $@ $^
+	xgettext -C -cTRANSLATORS --no-wrap --no-location -k -ktr -ktrNOOP --msgid-bugs-address='http://projects.vdr-developer.org/projects/plg-tvtv/issues/new' -o $@ $^
 
 %.po: $(I18Npot)
 	msgmerge -U --no-wrap --no-location --backup=none -q $@ $<
