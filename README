@@ -5,10 +5,14 @@ Written by:             Mario Gross <vdr-tvtv-plugin@arcor.de>
 			
 			Further improvements by monty35 <monty35@gmx.de>
 
-Project's homepage:     http://home.arcor.de/grossmar
+Project's homepage:
+	Current:	http://projects.vdr-developer.org/projects/show/plg-tvtv
 
-			Further improvement patches:
+	Older improvement patches (pre 0.4.0):
 			http://www.vdrportal.de/board/thread.php?threadid=77102
+
+	Original:	http://home.arcor.de/grossmar
+
 
 
 See the file COPYING for license information.
