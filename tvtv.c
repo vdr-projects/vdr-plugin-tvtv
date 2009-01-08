@@ -9,7 +9,7 @@
 #include "update.h"
 
 
-static const char *VERSION        = "0.3.3p8";
+static const char *VERSION        = "0.4.0";
 static const char *DESCRIPTION    = "TVTV Timers update";
 static const char *MAINMENUENTRY  = "TVTV";
 
