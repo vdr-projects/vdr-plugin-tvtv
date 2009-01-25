@@ -3,6 +3,7 @@ VDR Plugin 'tvtv' Revision History
 
 2009-xx-xx: Version x.x.x
 - Compile with -fPIC by default
+- Delete *.po and *.pot in clean target
 
 2009-01-08: Version 0.4.0
 
